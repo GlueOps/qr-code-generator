@@ -1,4 +1,4 @@
-replicaCount: '1'
+replicaCount: '2'
 image:
   pullPolicy: Always
-  lokiApiEndpoint: nil
+captain_domain: 'test-80-np.pluto.onglueops.rocks'

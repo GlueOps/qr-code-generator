@@ -4,4 +4,4 @@ description: GlueOps Helm Chart to deploy the GlueOps QR Code Generator
 
 appVersion: v0.1.0
 
-version: 0.1.0
+version: 0.1.0-alpha1
