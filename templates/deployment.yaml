@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: {{ .Release.Name }}
-        image: ghcr.io/glueops/metacontroller-operator-loki-rule-group:{{ .Chart.AppVersion }}
+        image: ghcr.io/glueops/qr-code-generator:latest:{{ .Chart.AppVersion }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: LOKI_API_ENDPOINT
@@ -31,5 +31,5 @@ spec:
     app: {{ .Release.Name }}
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
+      port: 80000
+      targetPort: 80000

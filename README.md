@@ -4,7 +4,7 @@ A FastAPI endpoint that creates QR codes based off given URLs
 
 ## Setting up .env file
 
-- Clone the [repo](https://github.com/development-captains/test-80-np.pluto.onglueops.rocks) into a codespace.
+- Clone your specific cluster's [repo](https://github.com/development-captains/) into a codespace.
 
 - Then run, in the root folder
 ```bash
