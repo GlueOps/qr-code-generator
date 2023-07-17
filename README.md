@@ -95,7 +95,10 @@ $ helm template qr-code-generator . -n glueops-core-qr-code-generator
 $ dig +trace <value-of-host-in-ingress.yaml-file>
 ```
 
-kubectl describe applications/qr-code-generator -n glueops-core
+- Describe an application
+```bash
+kubectl describe applications/<name> -n <name-space>
+```
 
 ## Deploying on ArgoCD
 - Reference [this](https://github.com/GlueOps/project-template-helm-chart-app) repo for parameters to include in your ArgoCD manifest.
