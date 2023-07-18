@@ -1,4 +1,0 @@
-replicaCount: '2'
-image:
-  pullPolicy: Always
-captain_domain: 'test-80-np.pluto.onglueops.rocks'
