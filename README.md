@@ -2,18 +2,6 @@
 
 A FastAPI endpoint that creates QR codes based off given URLs
 
-## Setting up .env file
-
-- Clone your specific cluster's [repo](https://github.com/development-captains/) into a codespace.
-
-- Then run, in the root folder
-
-```bash
-$ source .env
-```
-
-- Clone the repository you want to work on and ```cd``` into that directory.
-  
 ## Running the QR code generator
 
 - Development environment
