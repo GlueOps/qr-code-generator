@@ -1,5 +1,5 @@
-fastapi==0.101.0
+fastapi==0.103.1
 qrcode==7.4.2
-Pillow==10.0.0
+Pillow==10.0.1
 uvicorn[standard]==0.23.2
 gunicorn==21.2.0
