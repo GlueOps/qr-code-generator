@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11.5-alpine3.18
+FROM python:3.11.6-alpine3.18
 
 # Copy the files into the Docker image
 COPY . .
