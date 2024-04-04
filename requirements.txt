@@ -1,5 +1,5 @@
 fastapi==0.110.1
 qrcode==7.4.2
 Pillow==10.3.0
-uvicorn[standard]==0.28.0
+uvicorn[standard]==0.28.1
 gunicorn==21.2.0
