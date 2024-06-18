@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8000
 
 # Run the command to start uvicorn
-CMD ["uvicorn", "qr-generator:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["fastapi", "run", "qr-generator.py", "--host", "0.0.0.0", "--port", "8000"]
