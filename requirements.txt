@@ -1,4 +1,4 @@
 fastapi[standard]==0.115.6
+Pillow==11.2.1
 qrcode==8.2
-Pillow==11.0.0
 
