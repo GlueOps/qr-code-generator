@@ -1,4 +1,4 @@
-fastapi[standard]==0.123.4
+fastapi[standard]==0.123.5
 Pillow==11.3.0
 qrcode==8.2
 
