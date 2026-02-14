@@ -95,7 +95,7 @@ Mint a signed QR request path.
 
 ```bash
 curl -s \
-    - H "Authorization: Bearer $QR_MINT_TOKEN" \
+    -H "Authorization: Bearer $QR_MINT_TOKEN" \
     "http://localhost:8000/v1/sign?u=https://example.com&ttl=300"
 ```
 
