@@ -35,7 +35,11 @@ func main() {
 	// Mint endpoint is protected by Authorization: Bearer <QR_MINT_TOKEN>
 	mux.HandleFunc("/v1/sign", requireBearer(mintToken, signHandler([]byte(signingSecret))))
 
-	addr := "0.0.0.0:8000"
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
+	addr := "0.0.0.0:" + port
 	log.Printf("listening on %s", addr)
 	log.Fatal(http.ListenAndServe(addr, mux))
 }
