@@ -45,13 +45,10 @@ Dependencies used:
 
 ## Setup
 
-### 1) Clone & install
+### 1) Install dependencies
 
 ```bash
-go mod init github.com/glueops/qr-code-generator
-go get github.com/joho/godotenv
-go get github.com/skip2/go-qrcode
-go run .
+go mod download
 ```
 
 ### 2) Configure environment
