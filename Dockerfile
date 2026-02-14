@@ -12,7 +12,7 @@ FROM gcr.io/distroless/static-debian12:nonroot
 
 WORKDIR /
 
-COPY --from=build /out/qr-service /qr-service
+COPY --from=builder /out/qr-service /qr-service
 
 EXPOSE 8000
 
