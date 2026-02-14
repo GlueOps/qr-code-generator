@@ -8,3 +8,4 @@ tmp/
 vendor/
 .env
 .idea
+qr-code-generator
