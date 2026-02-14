@@ -1,6 +1,6 @@
 module github.com/glueops/qr-code-generator
 
-go 1.25.6
+go 1.23
 
 require (
 	github.com/joho/godotenv v1.5.1
