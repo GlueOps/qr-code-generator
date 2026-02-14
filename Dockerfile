@@ -1,15 +1,20 @@
-# Use an official Python runtime as a parent image
-FROM python:3.14.3-alpine@sha256:faee120f7885a06fcc9677922331391fa690d911c020abb9e8025ff3d908e510
+FROM golang:1.23-alpine AS builder
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Copy the files into the Docker image
 COPY . .
 
-# Install dependencies
-# RUN pip install --no-cache-dir fastapi uvicorn[standard] gunicorn qrcode[pil]
-RUN pip install --no-cache-dir -r requirements.txt
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o /out/qr-service .
 
-# Make port 8000 available to the world outside this container
+FROM gcr.io/distroless/static-debian12:nonroot
+
+WORKDIR /
+
+COPY --from=builder /out/qr-service /qr-service
+
 EXPOSE 8000
 
-# Run the command to start uvicorn
-CMD ["fastapi", "run", "qr-generator.py", "--host", "0.0.0.0", "--port", "8000"]
+ENV PORT=8000
+
+ENTRYPOINT ["/qr-service"]

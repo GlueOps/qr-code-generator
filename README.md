@@ -1,32 +1,146 @@
-# QR-code-generator
+# Signed QR Service (Go)
 
-A FastAPI endpoint that creates QR codes based off given URLs
+A tiny Go HTTP service that **mints signed, expiring QR codes** for approved target URLs.
 
-## Running the QR code generator
+It exposes two endpoints:
 
-- Development environment
+- `GET /v1/sign` — **protected** “mint” endpoint that creates a signed, expiring QR request URL
+- `GET /v1/qr` — **public** endpoint that validates the signature + expiration and returns a **PNG QR code**
 
-```python
-uvicorn qr-generator:app --reload
+## Why
+
+QR codes are easy to copy and reuse. This service lets you generate QR codes that:
+
+- expire after a configurable TTL
+- can only be minted by callers with a bearer token
+- only encode valid `http/https` URLs (and rejects `localhost`)
+
+## How it works
+
+Signature format:
+
+```
+sig = base64url( HMAC-SHA256(secret, u + "\n" + exp) )
 ```
 
-- Ensure [public](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/restricting-the-visibility-of-forwarded-ports#overview) port forwarding in codespace.
 
-## Running the Dockerfile
+The QR endpoint requires:
+
+- `u`   = target URL to encode
+- `exp` = unix timestamp (seconds) when the request expires
+- `sig` = HMAC signature over `u` and `exp`
+
+If the signature is valid and `exp` is in the future, the service returns a 256×256 PNG QR code encoding the **target URL**.
+
+## Requirements
+
+- Go 1.23+
+- Environment variables:
+    - `QR_SIGNING_SECRET` — secret key used for HMAC signing
+    - `QR_MINT_TOKEN` — bearer token required to call `/v1/sign`
+
+Dependencies used:
+- `github.com/joho/godotenv` (optional `.env` loading)
+- `github.com/skip2/go-qrcode` (PNG QR code generation)
+
+## Setup
+
+### 1) Install dependencies
 
 ```bash
-$ docker build -t qr-bot-generator .
-$ docker run -p 8000:8000 qr-bot-generator
+go mod download
 ```
 
-## Access the website
+### 2) Configure environment
+Create a .env file (or export env vars):
+```bash
+echo "QR_SIGNING_SECRET=$(openssl rand -hex 32)" > .env
+echo "QR_MINT_TOKEN=$(openssl rand -hex 16)" >> .env
+```
 
-- In your browser, navigate to ```https://127.0.0.1:8000.preview.app.github.dev/v1/qr?url=<your-url>``` - localhost, ```https://qr-code-generator.<development-captain-domain>/v1/qr?url=<your-url>``` - Kubernetes deployment
+Then start the server:
+```bash
+go run .
+```
 
-A QR code will be generated
-<img width="931" alt="image" src="https://github.com/GlueOps/github-actions-build-push-containers/assets/49791498/d66f773c-e05c-43db-b978-0bebbb303bb2">
+The service listens on:
 
-## Deploying on ArgoCD
-- Reference [this](https://github.com/GlueOps/project-template-helm-chart-app) repo for parameters to include in your ArgoCD manifest.
+- 0.0.0.0:8000
 
-- Video guide [1](https://drive.google.com/file/d/1gBThTF1ln-UTrxrMmle6K_0YEXunxBjz/view) & [2](https://drive.google.com/file/d/1gBThTF1ln-UTrxrMmle6K_0YEXunxBjz/view)
+## API
+### GET /v1/sign (protected)
+
+Mint a signed QR request path.
+
+#### Auth
+
+- Authorization: Bearer <QR_MINT_TOKEN>
+
+#### Query params
+
+- u (string, required): target URL to encode (must be http or https, not localhost)
+- ttl (int, required): time-to-live in seconds (1..86400)
+
+#### Response
+
+- 200 text/plain: a relative path like:
+```text
+/v1/qr?u=<escaped>&exp=<unix>&sig=<base64url>
+```
+
+#### Example
+
+```bash
+curl -s \
+    -H "Authorization: Bearer $QR_MINT_TOKEN" \
+    "http://localhost:8000/v1/sign?u=https://example.com&ttl=300"
+```
+
+### GET /v1/qr (public)
+Return a PNG QR code after validating signature + expiration.
+
+#### Query params
+- u (string, required): target URL to encode
+- exp (int, required): unix timestamp when the request expires
+- sig (string, required): base64url HMAC signature
+
+#### Response
+- 200 image/png: PNG QR code encoding the target URL (256×256)
+- 401: expired or bad signature
+- 400: missing/invalid params or invalid target URL
+
+#### Example
+First mint a signed path:
+```bash
+SIGNED_PATH=$(
+  curl -s \
+    -H "Authorization: Bearer $QR_MINT_TOKEN" \
+    "http://localhost:8000/v1/sign?u=https://example.com&ttl=300"
+)
+echo "$SIGNED_PATH"
+```
+Then fetch the QR image:
+```bash
+curl -s "http://localhost:8000$SIGNED_PATH" -o qr.png
+open qr.png  # macOS; use your OS viewer
+```
+
+### Validation rules for u
+
+The target URL must:
+- parse successfully
+- use scheme http or https
+- include a host
+- not have hostname localhost
+
+(Other private/internal hostnames are not blocked by default—see “Hardening” below.)
+
+### Security notes
+- /v1/sign is protected via a constant-time compare of the Authorization header.
+- /v1/qr uses constant-time comparison on decoded HMAC bytes.
+- Responses for QR images include Cache-Control: no-store.
+
+### Project layout
+
+Currently everything lives in main.go.
+
