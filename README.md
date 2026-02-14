@@ -140,6 +140,22 @@ The target URL must:
 - /v1/qr uses constant-time comparison on decoded HMAC bytes.
 - Responses for QR images include Cache-Control: no-store.
 
+### Hardening
+
+By default, this service only rejects `localhost` as a hostname. To block additional private or internal IP ranges (such as `127.0.0.1`, `10.x.x.x`, `192.168.x.x`, `172.16.x.x`, etc.), you can extend the `validateTargetURL` function in `main.go`.
+
+Example additions to consider:
+- Block IPv4 loopback: `127.0.0.0/8`
+- Block private networks: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`
+- Block link-local: `169.254.0.0/16`
+- Block IPv6 loopback and private ranges
+
+You may also want to:
+- Implement rate limiting on the `/v1/sign` endpoint
+- Add request logging for audit trails
+- Use TLS termination (e.g., via reverse proxy)
+- Rotate `QR_SIGNING_SECRET` and `QR_MINT_TOKEN` periodically
+
 ### Project layout
 
 Currently everything lives in main.go.
