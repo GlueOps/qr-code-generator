@@ -34,7 +34,7 @@ If the signature is valid and `exp` is in the future, the service returns a 256�
 
 ## Requirements
 
-- Go 1.20+ (likely works on earlier 1.x versions too)
+- Go 1.23+
 - Environment variables:
     - `QR_SIGNING_SECRET` — secret key used for HMAC signing
     - `QR_MINT_TOKEN` — bearer token required to call `/v1/sign`
