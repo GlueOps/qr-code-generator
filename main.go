@@ -122,8 +122,8 @@ func signHandler(secret []byte) http.HandlerFunc {
 			return
 		}
 		ttl, err := strconv.ParseInt(ttlStr, 10, 64)
-		if err != nil || ttl <= 0 || ttl > 24*3600 {
-			http.Error(w, "invalid ttl (1..86400)", http.StatusBadRequest)
+		if err != nil || ttl <= 0 || ttl > 24*3600*90 {
+			http.Error(w, "invalid ttl (1..7776000)", http.StatusBadRequest)
 			return
 		}
 
